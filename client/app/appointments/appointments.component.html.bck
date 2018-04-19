@@ -1,0 +1,105 @@
+<app-loading [condition]="isLoading"></app-loading>
+
+<app-toast [message]="toast.message"></app-toast>
+  
+<div class="card mb-3" *ngIf="!isLoading">
+	<div class="card" *ngIf="!isEditing">
+		<h4 class="card-header">Select a style</h4>
+		<div class="card-body">
+			<form class="form-inline">
+				<select class="form-control mr-2" id="delDomain" >
+					<option selected>Select a style</option>
+					<option value={{domain._id}} *ngFor="let domain of domains">{{domain.name}}</option>
+				</select>
+			</form>
+		</div>
+  </div>
+
+	<div class="card" *ngIf="!isEditing">
+		<h4 class="card-header">Select a stylist</h4>
+		<div class="card-body">
+			<form class="form-inline">
+				<select class="form-control mr-2" id="delDomain" >
+					<option selected>Select a stylist</option>
+					<option value={{domain._id}} *ngFor="let domain of domains">{{domain.name}}</option>
+				</select>
+			</form>
+		</div>
+  </div>
+
+	<div class="card" *ngIf="!isEditing">
+		<h4 class="card-header">Select a date</h4>
+		<div class="card-body">
+			<form class="form-inline">
+				<select class="form-control mr-2" id="delDomain" >
+					<option selected>Select a date</option>
+					<option value={{domain._id}} *ngFor="let domain of domains">{{domain.name}}</option>
+				</select>
+			</form>
+		</div>
+  </div>
+  
+  <h4 class="card-header">Appointments 
+	<select id="tdDomain" (change)="getAppointments('page')">
+		<option selected disabled>Select a domain</option>
+		<option *ngFor="let domain of domains">{{domain.name}}</option>
+	</select>
+  </h4>
+  
+  
+  <div class="card" *ngIf="!isEditing">
+		<h4 class="card-header">Select a style</h4>
+		<div class="card-body">
+			<form class="form-inline" [formGroup]="addAppointmentForm" (ngSubmit)="addDomain()">
+				<input class="form-control mr-2" type="text" name="aclient" formControlName="aclient" placeholder="Client">
+				<button class="btn btn-primary" type="submit" [disabled]="!addAppointmentForm.valid"><i class="fa fa-floppy-o"></i> Add</button>
+			</form>
+		</div>
+  </div>
+
+
+  <div class="card-body" *ngIf="!isEditing">
+		<h4 class="card-header">Appointments</h4>
+    <table class="table table-bordered">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col">Style</th>
+          <th scope="col">Stylist</th>
+          <th scope="col">Date</th>
+          <th scope="col">Time</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody *ngIf="appointments.length === 0">
+        <tr>
+          <td colspan="4">There aren't any appointments to display.</td>
+        </tr>  
+      </tbody>
+      <tbody *ngIf="!isEditing">
+        <tr *ngFor="let appointment of appointments">
+          <td *ngIf="!showappointments; else condition1">***********</td>
+			<ng-template #condition1><td>{{credential.username}}</td></ng-template>
+          <td *ngIf="!showappointments; else condition2">***********</td>
+			<ng-template #condition2><td>{{credential.password}}</td></ng-template>
+          <td>
+            <button class="btn btn-sm btn-danger" (click)="deleteCredential(credential)"><i class="fa fa-trash"></i> Delete</button>
+			<button class="btn btn-primary" (click)="toggleShowHide()" *ngIf="!showappointments; else condition3"><i class="fa fa-pencil"></i>Show</button>
+			<ng-template #condition3>
+				<button class="btn btn-primary" (click)="toggleShowHide()"><i class="fa fa-pencil"></i>Hide</button>
+			</ng-template>
+          </td>
+        </tr>  
+      </tbody>
+    </table>
+  </div>
+  <div class="card" *ngIf="!isEditing">
+		<h4 class="card-header">Add new appointments</h4>
+		<div class="card-body">
+			<form class="form-inline" [formGroup]="addAppointmentForm" (ngSubmit)="addAppointments()">
+				<input class="form-control mr-2" type="text" name="aclient" formControlName="aclient" placeholder="Client">
+				<input class="form-control mr-2" type="time" name="astyle" formControlName="astyle" placeholder="Style">
+				<button class="btn btn-primary" type="submit" [disabled]="!addAppointmentForm.valid"><i class="fa fa-floppy-o"></i>Add</button>
+			</form>
+		</div>
+  </div>
+</div>

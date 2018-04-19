@@ -1,0 +1,132 @@
+<app-loading [condition]="isLoading"></app-loading>
+
+<app-toast [message]="toast.message"></app-toast>
+
+<div class="card mb-3" *ngIf="!isLoading && !isStyleEditing">
+  <h4 class="card-header" color="blue">Appointments ({{appointments.length}})</h4>
+  <div class="card-body">
+    <table class="table table-bordered">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col">Client</th>
+          <th scope="col">Style</th>
+          <th scope="col">Stylist</th>
+          <th scope="col">Date</th>
+          <th scope="col">Time</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody *ngIf="appointments.length === 0">
+        <tr>
+          <td colspan="6">You don't have any future appointments. Please make an appointment below.</td>
+        </tr>  
+      </tbody>
+      <tbody *ngIf="!isEditing">
+        <tr *ngFor="let appointment of appointments">
+          <td>{{appointment.client}}</td>
+          <td>{{appointment.style}}</td>
+          <td>{{appointment.stylist}}</td>
+          <td>{{appointment.date}}</td>
+          <td>{{appointment.time}}</td>
+          <td>
+            <button class="btn btn-sm btn-primary" (click)="enableAppointmentEditing(appointment)"><i class="fa fa-pencil"></i> Edit</button> 
+            <button class="btn btn-sm btn-danger" (click)="deleteAppointment(appointment)"><i class="fa fa-trash"></i> Delete</button>
+          </td>
+        </tr>  
+      </tbody>
+      <tbody *ngIf="isAppointmentEditing">
+        <tr>
+          <td colspan="6">
+            <form class="form-inline" #form="ngForm" (ngSubmit)="editAppointment(appointment)">
+              <input class="form-control mr-2" type="text" name="client" [(ngModel)]="appointment.client" placeholder="Client" required>
+      <select class="form-control mr-2" name="style" [(ngModel)]="appointment.style" placeholder="Style" required >		
+		<option *ngFor="let style of styles">{{style.name}}</option>
+	  </select>
+      <select class="form-control mr-2" name="stylist" [(ngModel)]="appointment.stylist" placeholder="Stylist" required >		
+		<option *ngFor="let stylist of stylists">{{stylist.username}}</option>
+	  </select>
+              <input class="form-control mr-2" type="date" name="date" [(ngModel)]="appointment.date" placeholder="Date" required>
+              <input class="form-control mr-2" type="time" name="time" [(ngModel)]="appointment.time" placeholder="Time" required>
+              <button class="btn btn-sm btn-primary mr-2" type="submit" [disabled]="!form.form.valid"><i class="fa fa-floppy-o"></i> Save</button>
+              <button class="btn btn-sm btn-warning" (click)="cancelAppointmentEditing()"><i class="fa fa-times"></i> Cancel</button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card" *ngIf="!isEditing">
+  <h4 class="card-header">Make an appointment</h4>
+  <div class="card-body">
+    <form class="form-inline" [formGroup]="addAppointmentForm" (ngSubmit)="addAppointment()">
+      <input class="form-control mr-2" type="text" name="aclient" formControlName="aclient" placeholder="Client">
+      <select class="form-control mr-2" id="astyle" >		
+		<option selected disabled>Select a style</option>
+		<option *ngFor="let style of styles">{{style.name}}</option>
+	  </select>
+      <select class="form-control mr-2" id="astylist" >		
+		<option selected disabled>Select a stylist</option>
+		<option value={{stylist.username}} *ngFor="let stylist of stylists">{{stylist.firstname}} {{stylist.lastname}}</option>
+	  </select>
+      <input class="form-control mr-2" type="date" name="adate" formControlName="adate">
+      <input class="form-control mr-2" type="time" name="atime" formControlName="atime">
+      <button class="btn btn-primary" type="submit" [disabled]="!addAppointmentForm.valid"><i class="fa fa-floppy-o"></i> Add</button>
+    </form>
+  </div>
+</div>
+
+<div class="card mb-3" *ngIf="isAdmin && !isAppointmentEditing">
+  <h4 class="card-header">Styles ({{styles.length}})</h4>
+  <div class="card-body">
+    <table class="table table-bordered">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col">Style</th>
+          <th scope="col">Price</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody *ngIf="styles.length === 0">
+        <tr>
+          <td colspan="6">There aren't any styles in the system. Please add styles below.</td>
+        </tr>  
+      </tbody>
+      <tbody *ngIf="!isEditing">
+        <tr *ngFor="let style of styles">
+          <td>{{style.name}}</td>
+          <td>{{style.price}}</td>
+          <td>
+            <button class="btn btn-sm btn-primary" (click)="enableStyleEditing(style)"><i class="fa fa-pencil"></i> Edit</button> 
+            <button class="btn btn-sm btn-danger" (click)="deleteStyle(style)"><i class="fa fa-trash"></i> Delete</button>
+          </td>
+        </tr>  	
+      </tbody>
+      <tbody *ngIf="isStyleEditing">
+        <tr>
+          <td colspan="6">
+            <form class="form-inline" #form="ngForm" (ngSubmit)="editStyle(style)">
+              <input class="form-control mr-2" type="text" name="name" [(ngModel)]="style.name" placeholder="Style" required>
+              <input class="form-control mr-2" type="number" name="price" [(ngModel)]="style.price" placeholder="Price" required>
+              <button class="btn btn-sm btn-primary mr-2" type="submit" [disabled]="!form.form.valid"><i class="fa fa-floppy-o"></i> Save</button>
+              <button class="btn btn-sm btn-warning" (click)="cancelStyleEditing()"><i class="fa fa-times"></i> Cancel</button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card" *ngIf="isAdmin && !isEditing">
+  <h4 class="card-header">Add a style</h4>
+  <div class="card-body">
+    <form class="form-inline" [formGroup]="addStyleForm" (ngSubmit)="addStyle()">
+      <input class="form-control mr-2" type="text" name="sname" formControlName="sname" placeholder="Style">
+      <input class="form-control mr-2" type="number" name="sprice" formControlName="sprice" placeholder="Price">
+      <button class="btn btn-primary" type="submit" [disabled]="!addStyleForm.valid"><i class="fa fa-floppy-o"></i> Add</button>
+    </form>
+  </div>
+</div>
+
